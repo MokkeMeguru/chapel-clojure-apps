@@ -50,14 +50,15 @@
   (let [binary-array byte-array
         black (.getRGB Color/BLACK)
         white (.getRGB Color/WHITE)
-        new-int (for [i binary-array]
-                  (loop [c 0
-                         acc (list)]
-                    (if (< c 8)
-                      (if (= 0 (bit-and (bit-shift-right i c) 0x01))
-                        (recur (inc c) (conj acc black))
-                        (recur (inc c) (conj acc white)))
-                      acc)))]
+        new-int (pmap (fn [i]
+                        (loop [c 0
+                               acc (list)]
+                          (if (< c 8)
+                            (if (= 0 (bit-and (bit-shift-right i c) 0x01))
+                              (recur (inc c) (conj acc black))
+                              (recur (inc c) (conj acc white)))
+                            acc)))
+                      binary-array)]
     (reduce into [] new-int)))
 
 (defn color-array->buffered-image
